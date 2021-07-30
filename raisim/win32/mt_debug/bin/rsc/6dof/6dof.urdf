@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot
+  name="6dof">
+  
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <origin rpy="0 0 0" xyz="2 0 0"/>
+    <parent link="world"/>
+    <child link="base"/>
+  </joint>
+  
+  <!-- base -->
+  <link
+    name="base">
+    <inertial>
+      <origin
+        xyz="-0.000347374556861547 0.000101207333103441 0.0782524999724827"
+        rpy="0 0 0" />
+      <mass
+        value="2.98839561693632" />
+      <inertia
+        ixx="0.00853888049906063"
+        ixy="1.32639418659869E-06"
+        ixz="-5.10062501073997E-05"
+        iyy="0.0148391707873313"
+        iyz="-7.38801973712153E-06"
+        izz="0.0112310816428658" />
+    </inertial>
+    
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\base.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\base.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="steel">
+        <contact name="steel"/>
+      </material>
+    </collision>
+  </link>
+  
+  <!-- link1 -->
+  <link
+    name="link1">
+    <inertial>
+      <origin
+        xyz="-0.00172366771693358 -2.55178151346815E-05 0.133968888509977"
+        rpy="0 0 0" />
+      <mass
+        value="3.30743881556333" />
+      <inertia
+        ixx="0.0137983780124978"
+        ixy="5.47986713037484E-06"
+        ixz="0.000178679862765163"
+        iyy="0.0153291542700041"
+        iyz="-1.59398381387562E-06"
+        izz="0.00899596989685085" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267948966192313216916398 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\link1.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 0.8 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267948966192313216916398 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\link1.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="steel">
+        <contact name="steel"/>
+      </material>
+    </collision>
+  </link>
+  
+  <!-- joint1 -->
+  <joint
+    name="joint1"
+    type="continuous">
+    <origin
+      xyz="0 0 0.135"
+      rpy="1.5707963267948966192313216916398 0 0" />
+    <parent
+      link="base" />
+    <child
+      link="link1" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  
+  <!-- link2 -->
+  <link
+    name="link2">
+    <inertial>
+      <origin
+        xyz="0.0062635082635212 0.0195692461832506 0.281532730459941"
+        rpy="0 0 0" />
+      <mass
+        value="3.97302477404015" />
+      <inertia
+        ixx="0.139145612346073"
+        ixy="0.000105721459127739"
+        ixz="-0.000331195352477424"
+        iyy="0.140863892395562"
+        iyz="0.0077917679287208"
+        izz="0.0129377782724841" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267948966192313216916398 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\link2.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="-1.5707963267948966192313216916398 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes_simple\link2.obj" scale ="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="steel">
+        <contact name="steel"/>
+      </material>
+    </collision>
+  </link>
+  
+  <!-- joint2 -->
+  <joint
+    name="joint2"
+    type="continuous">
+    <origin
+      xyz="0 0.149 0"
+      rpy="0 0 0" />
+    <parent
+      link="link1" />
+    <child
+      link="link2" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+
+</robot>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="balls">
+  <link name="balls">
+    
+    <inertial>
+      <origin
+       xyz="0 0 0"/> <!-- RoM (guess) -->
+      <mass value="5" /> <!-- kg -->
+      <inertia ixx="0.500000" ixy="0.000000" ixz="0.000000" iyy="0.500000" iyz="0.000000" izz="0.500000"/> <!-- inertia of model -->
+    </inertial>
+    
+    <visual>
+      <origin
+        xyz="9.5 -0.5 99.5"/> <!-- change start position_visual_x y z -->
+      <geometry>
+        <mesh
+          filename="meshes\balls.STL" scale="0.01 0.01 0.01"/> <!-- solidworks2017 기준으로 mm = m로 인식하는것 같음 (guess) scale -->
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" /> <!-- color R G B ? -->
+      </material>
+    </visual>
+    
+    <collision>
+      <origin
+        xyz="10 0 100"/> <!-- change start position_real x y z -->
+      <geometry>
+        <sphere radius="0.5" /> <!-- m (guess) -->
+      </geometry>
+    </collision>
+    
+  </link>
+</robot>

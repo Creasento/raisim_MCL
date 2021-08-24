@@ -7,11 +7,15 @@
 #include <timeapi.h>
 #endif
 
-#include <string>
+#include <time.h>
 #include <iostream>
 #include <fstream>
 
 using namespace std;
+
+int runTime = 30000;
+int runTime2 = runTime * 2;
+int runTime3 = runTime * 3;
 
 //basic declaration
 int main(int argc, char* argv[]) {
@@ -33,23 +37,13 @@ int main(int argc, char* argv[]) {
   /// create objects
   auto arm1 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\6dof2\\6dof2.urdf"); //:) raisim\\win32\\mt_debug\\bin 다음경로부터임
   auto arm2 = world.addArticulatedSystem(binaryPath.getDirectory() + "\\rsc\\iiwa\\iiwa14.urdf");
-
-  Eigen::VectorXd jointNominalConfig(5), jointVelocityTarget(arm1->getDOF());
-  jointNominalConfig << 0, 0, 0.54, 1.0, 0.0; //set list of joint
-  jointVelocityTarget.setZero(); //get arm1 Dof and set 0 ex) [0, 0, 0, 0, 0]
-
-  Eigen::VectorXd jointPgain(arm1->getDOF()), jointDgain(arm1->getDOF());
-  jointPgain.tail(5).setConstant(100.0); //set P gain -> tail(target link number).setConstant(P gain)
-  jointDgain.tail(5).setConstant(5.0); //set D gain -> tail(target link number).setConstant(D gain)
-
-  arm1->setGeneralizedCoordinate(jointNominalConfig);
-  arm1->setGeneralizedForce(Eigen::VectorXd::Zero(arm1->getDOF()));
-  arm1->setPdGains(jointPgain, jointDgain); //set PD gains
-  arm1->setPdTarget(jointNominalConfig, jointVelocityTarget); //speed set zero to PD gain
-
-  arm1->setName("arm_1"); //set name of object. it show in raisim
-  arm2->setName("arm_2");
   
+  Eigen::VectorXd positionJ1(runTime3);
+  Eigen::VectorXd positionJ2(runTime3);
+  Eigen::VectorXd positionJ3(runTime3);
+  Eigen::VectorXd positionJ4(runTime3);
+  Eigen::VectorXd positionJ5(runTime3);
+
   auto footFrameIndex1 = arm1->getFrameIdxByName("joint1");
   auto footFrameIndex2 = arm1->getFrameIdxByName("joint2");
   auto footFrameIndex3 = arm1->getFrameIdxByName("joint3");
@@ -63,6 +57,12 @@ int main(int argc, char* argv[]) {
   raisim::Vec<3> footPosition5, footVelocity5, footAngularVelocity5;
 
   /// launch raisim server
+
+  clock_t start, end;
+  double result;
+
+  start = clock(); //시간 측정 시작
+
   raisim::RaisimServer server(&world);
   server.launchServer();
 
@@ -72,9 +72,19 @@ int main(int argc, char* argv[]) {
   /// save joint variables to txt
   ofstream fout("joint.txt", ios_base::out);
 
-  for (int i = 0; i < 2000; i++) {
+  Eigen::VectorXd jointNominalConfig(arm1->getGeneralizedCoordinateDim());
+  jointNominalConfig << 1, 0, 0, 0, 0;
+  arm1->setGeneralizedForce(jointNominalConfig);
+
+  for (int i = 0; i < runTime; i++) {
 
       std::this_thread::sleep_for(std::chrono::microseconds(1));
+
+      if (i == 15000) {
+          jointNominalConfig << 0, 0, 0, 0, 0;
+          arm1->setGeneralizedForce(jointNominalConfig);
+      }
+
       //joint1 read
       arm1->getFramePosition(footFrameIndex1, footPosition1);
       arm1->getFrameVelocity(footFrameIndex1, footVelocity1);
@@ -95,72 +105,41 @@ int main(int argc, char* argv[]) {
       arm1->getFramePosition(footFrameIndex5, footPosition5);
       arm1->getFrameVelocity(footFrameIndex5, footVelocity5);
       arm1->getFrameAngularVelocity(footFrameIndex5, footAngularVelocity5);
+      
+      positionJ1[i] = footPosition1[0];
+      positionJ1[runTime + i] = footPosition1[1];
+      positionJ1[runTime2 + i] = footPosition1[2];
 
-      //joint1 txt
-      fout << "Position of Joint1, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footPosition1.e() << endl; //cout the position(xyz) of joint3
+      positionJ2[i] = footPosition2[0];
+      positionJ2[runTime + i] = footPosition2[1];
+      positionJ2[runTime2 + i] = footPosition2[2];
 
-      fout << "Velocity of Joint1, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footVelocity1.e() << endl;
+      positionJ3[i] = footPosition3[0];
+      positionJ3[runTime + i] = footPosition3[1];
+      positionJ3[runTime2 + i] = footPosition3[2];
 
-      fout << "Angular velocity of Joint1, rpy, time(ms) = ";
-      fout << i << endl;
-      fout << footAngularVelocity1.e() << endl;
-      //joint2 txt
-      fout << "Position of Joint2, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footPosition2.e() << endl; //cout the position(xyz) of joint3
+      positionJ4[i] = footPosition4[0];
+      positionJ4[runTime + i] = footPosition4[1];
+      positionJ4[runTime2 + i] = footPosition4[2];
 
-      fout << "Velocity of Joint2, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footVelocity2.e() << endl;
-
-      fout << "Angular velocity of Joint2, rpy, time(ms) = ";
-      fout << i << endl;
-      fout << footAngularVelocity2.e() << endl;
-      //joint3 txt
-      fout << "Position of Joint3, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footPosition3.e() << endl; //cout the position(xyz) of joint3
-
-      fout << "Velocity of Joint3, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footVelocity3.e() << endl;
-
-      fout << "Angular velocity of Joint3, rpy, time(ms) = ";
-      fout << i << endl;
-      fout << footAngularVelocity3.e() << endl;
-      //joint4 txt
-      fout << "Position of Joint4, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footPosition4.e() << endl; //cout the position(xyz) of joint3
-
-      fout << "Velocity of Joint4, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footVelocity4.e() << endl;
-
-      fout << "Angular velocity of Joint4, rpy, time(ms) = ";
-      fout << i << endl;
-      fout << footAngularVelocity4.e() << endl;
-      //joint5 txt
-      fout << "Position of Joint5, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footPosition5.e() << endl; //cout the position(xyz) of joint3
-
-      fout << "Velocity of Joint5, xyz, time(ms) = ";
-      fout << i << endl;
-      fout << footVelocity5.e() << endl;
-
-      fout << "Angular velocity of Joint5, rpy, time(ms) = ";
-      fout << i << endl;
-      fout << footAngularVelocity5.e() << endl;
-
-      //arm1->setGeneralizedVelocity(jointVel1);
+      positionJ5[i] = footPosition5[0];
+      positionJ5[runTime + i] = footPosition5[1];
+      positionJ5[runTime2 + i] = footPosition5[2];
       
       server.integrateWorldThreadSafe(); //:) 서버 유지
+
   }
+
+  fout << positionJ1 << endl;
+  fout << positionJ2 << endl;
+  fout << positionJ3 << endl;
+  fout << positionJ4 << endl;
+  fout << positionJ5 << endl;
   fout.close();
+
   server.killServer();
+  end = clock(); //시간 측정 끝
+  result = (double)(end - start);
+  printf("%f", result);
+  return 0;
 }
